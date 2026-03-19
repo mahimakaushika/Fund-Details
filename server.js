@@ -45,10 +45,16 @@ app.post("/save", async (req, res) => {
   }
 });
 
+app.post("/save", async (req, res) => {
+  // your save code
+  res.send("Saved!");
+});
+
 app.get("/data", async (req, res) => {
-  const response = await axios.get(
-    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`
-  );
+  // your read code
+  res.json(content); // must return JSON
+});
+
 
   const content = JSON.parse(
     Buffer.from(response.data.content, "base64").toString()
