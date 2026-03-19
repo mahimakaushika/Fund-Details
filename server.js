@@ -4,9 +4,9 @@ const app = express();
 
 app.use(express.json());
 
-const GITHUB_TOKEN = "YOUR_TOKEN";
-const OWNER = "YOUR_USERNAME";
-const REPO = "payment-system";
+const GITHUB_TOKEN = "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";
+const OWNER = "mahimakaushika";
+const REPO = "Fund-Details";
 const FILE_PATH = "data.json";
 
 app.post("/save", async (req, res) => {
