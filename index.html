@@ -34,9 +34,14 @@ form {
   max-width: 450px;
   margin-top: 100px;
 }
-
+.image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  
 form img {
-  width: 100px;
+  width: 200px;
 }
 
 input, select {
@@ -87,7 +92,9 @@ button:hover {
 
 <div class="container">
 <form id="myForm">
-  <img src="Picsart_26-03-24_01-39-29-949.png">
+  <div class="image">
+      <img src="Picsart_26-03-24_01-39-29-949.png">
+  </div>
 
   <input type="text" id="name" placeholder="Name" required>
 
