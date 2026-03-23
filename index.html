@@ -171,7 +171,6 @@ document.getElementById("myForm").addEventListener("submit", async function(e) {
     method: "POST",
     body: JSON.stringify(data)
   })
-  .then(res => alert("Submitted Successfully!"))
   .catch(err => alert("Error submitting form"));
 });
 
