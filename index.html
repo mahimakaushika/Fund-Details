@@ -225,23 +225,20 @@ function toBase64(file) {
   })
   .catch(err => alert("Error submitting form"));
 });
-  document.getElementById("department").addEventListener("change", function() {
-  const dept = this.value;
-  const regInput = document.getElementById("regno");
+  document.addEventListener("DOMContentLoaded", function () {
 
-  if (dept === "Information Technology") {
-    regInput.value = "NAW/IT/2025/F/";
-  else if (dept === "Management") {
-    regInput.value = "NAW/MG/2025/F/";
-  else if (dept === "English") {
-    regInput.value = "NAW/ENG/2025/F/";
-  else if (dept === "Business Finance") {
-    regInput.value = "NAW/BF/2025/F/";
-  else if (dept === "Tourism & Hospitality Management") {
-    regInput.value = "NAW/THM/2025/F/";
-  } else {
-    regInput.value = ""; // clear for other departments (optional)
-  };
+  document.getElementById("department").addEventListener("change", function() {
+    const dept = this.value;
+    const regInput = document.getElementById("regno");
+
+    if (dept === "Information Technology") {
+      regInput.value = "NAW/IT/2025/F/";
+    } else {
+      regInput.value = "";
+    }
+  });
+
+});
 </script>
 
 </body>
