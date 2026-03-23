@@ -11,8 +11,26 @@
   <style>
     /* Reset & base */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Roboto', sans-serif; background: #f0f4f8; color: #333; }
+    body { font-family: 'Roboto', sans-serif; background: url("1774252483604.png") no-repeat center fixed; background-size: cover; color: #333; }
+    #successMsg {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.4s ease;
+  z-index: 1000;
+}
 
+#successMsg.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
     /* Center form */
     .container {
       display: flex;
@@ -120,6 +138,7 @@
 
     <button type="submit">Submit</button>
   </form>
+  <div id="successMsg">✅ Submitted Successfully!</div>
 </div>
 
 <script>
@@ -163,6 +182,49 @@ function toBase64(file) {
     reader.onerror = error => reject(error);
   });
 }
+  document.getElementById("myForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const fileInput = document.getElementById("slip");
+  let base64 = "";
+
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    base64 = await toBase64(file);
+    base64 = base64.split(",")[1];
+  }
+
+  const data = {
+    name: document.getElementById("name").value,
+    department: document.getElementById("department").value,
+    regno: document.getElementById("regno").value,
+    date: document.getElementById("date").value,
+    amount: document.getElementById("amount").value,
+    status: document.getElementById("status").value,
+    slip: base64
+  };
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(res => {
+    // ✅ Show animated message
+    const msg = document.getElementById("successMsg");
+    msg.classList.add("show");
+
+    setTimeout(() => {
+      msg.classList.remove("show");
+    }, 3000);
+
+    // ✅ Clear form
+    document.getElementById("myForm").reset();
+
+    // Reset default amount
+    document.getElementById("amount").value = "500.00";
+  })
+  .catch(err => alert("Error submitting form"));
+});
 </script>
 
 </body>
