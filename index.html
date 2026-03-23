@@ -87,12 +87,6 @@ button:hover {
 
 <body>
 
-
-<div id="maintenanceMsg" style="display:none; text-align:center; font-size:22px; color:red; margin-top:50px;">
-	🚧 Site is under maintenance
-</div>
-
-<div id="formContainer">
 <div class="container">
 <form id="myForm">
   <h2>Heinford Wasath Udanaya 2026</h2>
@@ -125,10 +119,9 @@ button:hover {
 
   <button type="submit">Submit</button>
 </form>
-</div>
 
 <div id="successMsg">✅ Submitted Successfully!</div>
-</div>
+
 
 <script>
 const scriptURL = "https://script.google.com/macros/s/AKfycbyH7-DHzFTsY-iRDDkjRgJ5K6bSsArz8aiR5AdkStvKEDsFJCVhPGLqGpO6SwAktLUIDw/exec";
@@ -208,21 +201,6 @@ document.getElementById("myForm").addEventListener("submit", async function(e) {
     console.error(err);
   }
 });
-async function checkSiteStatus(){
-  try{
-    const res = await fetch(scriptURL + "?type=status");
-    const data = await res.json();
-
-    if(data.status === "OFF"){
-      document.getElementById("formContainer").style.display = "none";
-      document.getElementById("maintenanceMsg").style.display = "block";
-    }
-  }catch(e){
-    console.error(e);
-  }
-}
-
-checkSiteStatus();
 </script>
 
 </body>
