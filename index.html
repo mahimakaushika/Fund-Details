@@ -87,6 +87,12 @@ button:hover {
 
 <body>
 
+<div id="formContainer">
+	<div id="maintenanceMsg" style="display:none; text-align:center; font-size:22px; color:red; margin-top:50px;">
+🚧 Site is under maintenance
+	</div>
+</div>
+
 <div class="container">
 <form id="myForm">
   <h2>Heinford Wasath Udanaya 2026</h2>
@@ -201,6 +207,21 @@ document.getElementById("myForm").addEventListener("submit", async function(e) {
     console.error(err);
   }
 });
+async function checkSiteStatus(){
+  try{
+    const res = await fetch(scriptURL + "?type=status");
+    const data = await res.json();
+
+    if(data.status === "OFF"){
+      document.getElementById("formContainer").style.display = "none";
+      document.getElementById("maintenanceMsg").style.display = "block";
+    }
+  }catch(e){
+    console.error(e);
+  }
+}
+
+checkSiteStatus();
 </script>
 
 </body>
