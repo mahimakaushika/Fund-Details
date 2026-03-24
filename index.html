@@ -819,6 +819,11 @@ document.getElementById("myForm").addEventListener("submit", async function(e) {
     try {
       const file = fileInput.files[0];
       base64 = await toBase64(file);
+
+      // In your form submit handler, add this:
+console.log("Sending base64 length:", base64.length);
+console.log("Base64 preview:", base64.substring(0, 100));
+      
       base64 = base64.split(",")[1];
     } catch (err) {
       console.error("File conversion error:", err);
