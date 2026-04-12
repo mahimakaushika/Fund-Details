@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Data Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #f8fafc;
+            padding: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header h1 {
+            color: #1e293b;
+            font-size: 1.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .controls {
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .refresh-btn {
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+
+        .content {
+            padding: 2rem;
+            min-height: 300px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: #ef4444;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .retry-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .index-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #e0e7ff;
+            color: #4f46e5;
+            border-radius: 9999px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .email-link {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .email-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .stats {
+            padding: 1rem 2rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .debug-panel {
+            margin: 1rem 2rem;
+            padding: 1rem;
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: #92400e;
+        }
+
+        .debug-panel.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Student Data Portal</h1>
+            <p class="subtitle">Connected to Google Sheets: Student_Data</p>
+        </div>
+
+        <div id="debugPanel" class="debug-panel hidden">
+            <strong>⚠️ Setup Required:</strong>
+            <ol style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                <li>Deploy Apps Script as Web App (see instructions below)</li>
+                <li>Copy the deployment URL (ends with /exec)</li>
+                <li>Paste it in the APPS_SCRIPT_URL variable below</li>
+                <li>Use a local server (Live Server) to open this file</li>
+            </ol>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search by name, index number, or email..."
+                >
+            </div>
+            <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+        </div>
+
+        <div class="content">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading student data...</p>
+            </div>
+
+            <div id="error" class="error hidden">
+                <div class="error-icon">⚠️</div>
+                <h3>Failed to load data</h3>
+                <p id="errorMessage">Check your connection and try again.</p>
+                <button class="retry-btn" onclick="loadData()">Try Again</button>
+            </div>
+
+            <div id="tableContainer" class="table-container hidden">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Index Number</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+                <div id="noResults" class="no-results hidden">
+                    No students found matching your search.
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <span id="statsText">Waiting for data...</span>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ STEP 1: Deploy Apps Script, then paste your URL here
+        // It should look like: https://script.google.com/macros/s/AKfyc.../exec
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwalpsCuvTiYOnOaP7YNN-_jjl8nrg517zq04eOupVM2V3CyJQVvt2zMo3jn7fwBiO8Yg/exec';
+        
+        let allStudents = [];
+        let filteredStudents = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if URL is still placeholder
+            if (APPS_SCRIPT_URL.includes('YOUR_DEPLOYMENT_ID')) {
+                showError('Please update APPS_SCRIPT_URL with your deployment URL');
+                document.getElementById('debugPanel').classList.remove('hidden');
+                document.getElementById('statsText').textContent = 'Setup required - see yellow box above';
+                return;
+            }
+            loadData();
+            setupSearch();
+        });
+
+        async function loadData() {
+            showLoading();
+            
+            try {
+                console.log('Fetching from:', APPS_SCRIPT_URL);
+                
+                const response = await fetch(APPS_SCRIPT_URL + '?action=getData');
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Response data:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Unknown error from server');
+                }
+                
+                allStudents = result.data || [];
+                filteredStudents = [...allStudents];
+                
+                renderTable();
+                updateStats();
+                showTable();
+                
+            } catch (error) {
+                console.error('Detailed error:', error);
+                showError(error.message);
+                
+                // Show helpful message for common errors
+                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                    document.getElementById('errorMessage').innerHTML += 
+                        '<br><br><strong>Tips:</strong><br>1. Make sure you deployed the Apps Script as Web App<br>' +
+                        '2. Set access to "Anyone" or "Anyone with Google account"<br>' +
+                        '3. Use Live Server extension (not file:// protocol)';
+                }
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const noResults = document.getElementById('noResults');
+            
+            if (filteredStudents.length === 0) {
+                tbody.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            noResults.classList.add('hidden');
+            
+            tbody.innerHTML = filteredStudents.map(student => `
+                <tr>
+                    <td>
+                        <span class="index-badge">${escapeHtml(student.index_number || student.index || 'N/A')}</span>
+                    </td>
+                    <td>${escapeHtml(student.name || 'Unknown')}</td>
+                    <td>
+                        <a href="mailto:${escapeHtml(student.email || '')}" class="email-link">
+                            ${escapeHtml(student.email || 'No email')}
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                
+                if (!query) {
+                    filteredStudents = [...allStudents];
+                } else {
+                    filteredStudents = allStudents.filter(student => {
+                        const searchText = `${student.index_number || ''} ${student.index || ''} ${student.name || ''} ${student.email || ''}`.toLowerCase();
+                        return searchText.includes(query);
+                    });
+                }
+                
+                renderTable();
+                updateStats();
+            });
+        }
+
+        function updateStats() {
+            const stats = document.getElementById('statsText');
+            const showing = filteredStudents.length;
+            const total = allStudents.length;
+            
+            if (showing === total) {
+                stats.textContent = `Showing all ${total} students`;
+            } else {
+                stats.textContent = `Showing ${showing} of ${total} students`;
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('tableContainer').classList.add('hidden');
+        }
+
+        function showTable() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('tableContainer').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('tableContainer').classList.add('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
