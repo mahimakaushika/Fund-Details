@@ -231,6 +231,11 @@
             background: #dc2626;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         /* Content Card */
         .content-card {
             background: var(--card);
@@ -294,14 +299,8 @@
         }
 
         tr.deleting {
-            animation: fadeOut 0.3s ease forwards;
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
+            opacity: 0.5;
+            pointer-events: none;
         }
 
         tr:last-child td {
@@ -562,7 +561,7 @@
                 <div class="brand-icon">🎓</div>
                 <div>
                     <h1>Student Directory</h1>
-                    <span>SLIATE - Nawalapitiya (IT Students)</span>
+                    <span>Manage student records</span>
                 </div>
             </div>
             <div class="header-actions">
@@ -661,8 +660,8 @@
             <h3>Delete Student Record?</h3>
             <p>Are you sure you want to delete <strong id="deleteStudentName">this student</strong>? This action cannot be undone.</p>
             <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                <button class="btn btn-secondary" onclick="closeDeleteModal()" id="cancelBtn">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>
     </div>
@@ -723,7 +722,7 @@
                 const initials = (student.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 
                 return `
-                    <tr data-row-index="${student.sheetRow}" data-student-name="${escapeHtml(student.name || 'Unknown')}">
+                    <tr data-row-id="${student.id}" data-row-index="${student.rowIndex}">
                         <td>
                             <span class="index-tag">${escapeHtml(student.index_number || student.index || 'N/A')}</span>
                         </td>
@@ -732,7 +731,7 @@
                                 <div class="avatar">${initials}</div>
                                 <div class="student-details">
                                     <h4>${escapeHtml(student.name || 'Unknown')}</h4>
-                                    <p>Row ${student.sheetRow}</p>
+                                    <p>Row ${student.rowIndex}</p>
                                 </div>
                             </div>
                         </td>
@@ -741,7 +740,7 @@
                             <div class="actions">
                                 <button class="action-btn" onclick="copyEmail('${escapeHtml(student.email || '')}')" title="Copy Email">📋</button>
                                 <button class="action-btn" onclick="sendEmail('${escapeHtml(student.email || '')}')" title="Send Email">✉️</button>
-                                <button class="action-btn delete" onclick="openDeleteModal(${student.sheetRow}, '${escapeHtml(student.name || 'Unknown')}')" title="Delete">🗑️</button>
+                                <button class="action-btn delete" onclick="openDeleteModal(${student.rowIndex}, '${escapeHtml(student.name || 'Unknown')}')" title="Delete">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -783,6 +782,8 @@
             studentToDelete = rowIndex;
             document.getElementById('deleteStudentName').textContent = studentName;
             document.getElementById('deleteModal').classList.add('active');
+            document.getElementById('confirmDeleteBtn').disabled = false;
+            document.getElementById('confirmDeleteBtn').textContent = 'Delete';
         }
 
         function closeDeleteModal() {
@@ -793,15 +794,22 @@
         async function confirmDelete() {
             if (!studentToDelete) return;
             
-            closeDeleteModal();
+            // Disable buttons during deletion
+            document.getElementById('confirmDeleteBtn').disabled = true;
+            document.getElementById('cancelBtn').disabled = true;
+            document.getElementById('confirmDeleteBtn').textContent = 'Deleting...';
             
-            // Visual feedback - mark row as deleting
+            // Visual feedback
             const row = document.querySelector(`tr[data-row-index="${studentToDelete}"]`);
             if (row) row.classList.add('deleting');
             
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({
                         action: 'delete',
                         rowIndex: studentToDelete
@@ -810,26 +818,28 @@
                 
                 const result = await response.json();
                 
-                if (!result.success) throw new Error(result.error);
+                if (!result.success) {
+                    throw new Error(result.error);
+                }
                 
                 // Update counters
                 deletedCount++;
                 document.getElementById('deletedCount').textContent = deletedCount;
                 
-                // Remove from arrays
-                allStudents = allStudents.filter(s => s.sheetRow !== studentToDelete);
-                filteredStudents = filteredStudents.filter(s => s.sheetRow !== studentToDelete);
+                closeDeleteModal();
+                showToast('Student deleted successfully', 'success');
                 
-                // Re-render
+                // IMPORTANT: Refresh data from server to get updated row numbers
                 setTimeout(() => {
-                    renderTable();
-                    updateStats();
-                    showToast('Student deleted successfully', 'success');
-                }, 300);
+                    loadData();
+                }, 500);
                 
             } catch (error) {
                 if (row) row.classList.remove('deleting');
                 showToast('Failed to delete: ' + error.message, 'error');
+                document.getElementById('confirmDeleteBtn').disabled = false;
+                document.getElementById('cancelBtn').disabled = false;
+                document.getElementById('confirmDeleteBtn').textContent = 'Delete';
             }
         }
 
