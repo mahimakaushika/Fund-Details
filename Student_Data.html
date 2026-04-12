@@ -791,57 +791,46 @@
             studentToDelete = null;
         }
 
-        async function confirmDelete() {
-            if (!studentToDelete) return;
-            
-            // Disable buttons during deletion
-            document.getElementById('confirmDeleteBtn').disabled = true;
-            document.getElementById('cancelBtn').disabled = true;
-            document.getElementById('confirmDeleteBtn').textContent = 'Deleting...';
-            
-            // Visual feedback
-            const row = document.querySelector(`tr[data-row-index="${studentToDelete}"]`);
-            if (row) row.classList.add('deleting');
-            
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'delete',
-                        rowIndex: studentToDelete
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (!result.success) {
-                    throw new Error(result.error);
-                }
-                
-                // Update counters
-                deletedCount++;
-                document.getElementById('deletedCount').textContent = deletedCount;
-                
-                closeDeleteModal();
-                showToast('Student deleted successfully', 'success');
-                
-                // IMPORTANT: Refresh data from server to get updated row numbers
-                setTimeout(() => {
-                    loadData();
-                }, 500);
-                
-            } catch (error) {
-                if (row) row.classList.remove('deleting');
-                showToast('Failed to delete: ' + error.message, 'error');
-                document.getElementById('confirmDeleteBtn').disabled = false;
-                document.getElementById('cancelBtn').disabled = false;
-                document.getElementById('confirmDeleteBtn').textContent = 'Delete';
-            }
+        // Change the fetch in confirmDelete() from POST to GET:
+async function confirmDelete() {
+    if (!studentToDelete) return;
+    
+    document.getElementById('confirmDeleteBtn').disabled = true;
+    document.getElementById('cancelBtn').disabled = true;
+    document.getElementById('confirmDeleteBtn').textContent = 'Deleting...';
+    
+    const row = document.querySelector(`tr[data-row-index="${studentToDelete}"]`);
+    if (row) row.classList.add('deleting');
+    
+    try {
+        // Use GET instead of POST - no CORS preflight!
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=delete&rowIndex=${studentToDelete}`);
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error);
         }
+        
+        deletedCount++;
+        document.getElementById('deletedCount').textContent = deletedCount;
+        
+        closeDeleteModal();
+        showToast('Student deleted successfully', 'success');
+        
+        // Refresh data
+        setTimeout(() => {
+            loadData();
+        }, 500);
+        
+    } catch (error) {
+        if (row) row.classList.remove('deleting');
+        showToast('Failed to delete: ' + error.message, 'error');
+        document.getElementById('confirmDeleteBtn').disabled = false;
+        document.getElementById('cancelBtn').disabled = false;
+        document.getElementById('confirmDeleteBtn').textContent = 'Delete';
+    }
+}
 
         // Close modal on overlay click
         document.getElementById('deleteModal').addEventListener('click', (e) => {
