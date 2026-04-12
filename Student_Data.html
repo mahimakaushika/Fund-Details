@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Data Portal | Modern Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Student Directory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,786 +13,547 @@
         }
 
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --accent: #06b6d4;
-            --dark: #0f172a;
-            --light: #f8fafc;
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.18);
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 2rem;
-            overflow-x: hidden;
-            position: relative;
+            line-height: 1.6;
         }
 
-        /* Animated Background */
-        .bg-animation {
-            position: fixed;
+        /* Header */
+        .top-bar {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .bg-animation span {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: rgba(99, 102, 241, 0.3);
-            border-radius: 50%;
-            animation: float 15s infinite;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-        }
-
-        .bg-animation span:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; width: 80px; height: 80px; }
-        .bg-animation span:nth-child(2) { left: 30%; top: 60%; animation-delay: 2s; width: 60px; height: 60px; background: rgba(236, 72, 153, 0.3); }
-        .bg-animation span:nth-child(3) { left: 70%; top: 40%; animation-delay: 4s; width: 100px; height: 100px; background: rgba(6, 182, 212, 0.3); }
-        .bg-animation span:nth-child(4) { left: 90%; top: 80%; animation-delay: 6s; width: 40px; height: 40px; }
-        .bg-animation span:nth-child(5) { left: 50%; top: 10%; animation-delay: 8s; width: 120px; height: 120px; background: rgba(236, 72, 153, 0.2); }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.8; }
-        }
-
-        /* Grid Pattern Overlay */
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Glassmorphism Header */
-        .header {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            animation: slideDown 0.8s ease-out;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
+            z-index: 100;
         }
 
         .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            position: relative;
-            z-index: 1;
         }
 
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6); }
-        }
-
-        .header-text h1 {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 800;
-            font-family: 'Space Grotesk', sans-serif;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-text p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1rem;
-            font-weight: 400;
-        }
-
-        .stats-badge {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.3));
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
-            color: white;
-            font-weight: 600;
+        .brand {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            backdrop-filter: blur(10px);
-            animation: fadeIn 1s ease-out 0.3s both;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
         }
 
-        .stats-number {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--accent);
+        .brand h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
         }
 
-        /* Controls Section */
-        .controls {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem 2rem;
+        .brand span {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
             margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.blue { background: #e0f2fe; }
+        .stat-icon.purple { background: #ede9fe; }
+        .stat-icon.green { background: #d1fae5; }
+
+        .stat-info h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .stat-info p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
             display: flex;
             gap: 1rem;
-            box-shadow: var(--shadow);
-            animation: slideUp 0.8s ease-out 0.2s both;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .search-box {
+        .search-wrapper {
             flex: 1;
+            min-width: 250px;
             position: relative;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
         .search-icon {
             position: absolute;
-            left: 1.25rem;
+            left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.25rem;
-            transition: all 0.3s;
-        }
-
-        #searchInput {
-            width: 100%;
-            padding: 1rem 1.5rem 1rem 3.5rem;
-            background: rgba(15, 23, 42, 0.6);
-            border: 2px solid rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            color: white;
-            font-size: 1rem;
-            font-family: 'Outfit', sans-serif;
-            transition: all 0.3s;
-        }
-
-        #searchInput:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-            background: rgba(15, 23, 42, 0.8);
-        }
-
-        #searchInput::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        #searchInput:focus + .search-icon {
-            color: var(--primary);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 0.75rem;
+            color: var(--text-muted);
         }
 
         .btn {
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
             border: none;
-            border-radius: 16px;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            transition: all 0.2s;
+            font-family: inherit;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: white;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
+            background: var(--primary-dark);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
+            background: var(--border);
         }
 
-        .btn:active {
-            transform: translateY(-1px);
+        /* Content Card */
+        .content-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
         }
 
-        /* Content Area */
-        .content {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2rem;
-            min-height: 400px;
-            box-shadow: var(--shadow);
-            animation: slideUp 0.8s ease-out 0.4s both;
-        }
-
-        /* Loading Animation */
-        .loading {
+        .card-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 0.375rem 0.75rem;
+            background: var(--bg);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 1.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9375rem;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
         }
 
-        .loading-spinner {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1.5rem;
+        .student-details h4 {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9375rem;
         }
 
-        .loading-spinner::before,
-        .loading-spinner::after {
-            content: '';
-            position: absolute;
+        .student-details p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .index-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.875rem;
+            background: #e0f2fe;
+            color: var(--primary-dark);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        .email-cell {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--bg);
+            color: var(--primary);
+        }
+
+        /* States */
+        .state-message {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .state-icon {
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        .state-icon.loading {
+            background: #e0f2fe;
+            color: var(--primary);
             animation: spin 1s linear infinite;
         }
 
-        .loading-spinner::before {
-            width: 100%;
-            height: 100%;
-            border: 4px solid transparent;
-            border-top-color: var(--primary);
-            border-right-color: var(--secondary);
+        .state-icon.error {
+            background: #fee2e2;
+            color: var(--danger);
         }
 
-        .loading-spinner::after {
-            width: 60%;
-            height: 60%;
-            top: 20%;
-            left: 20%;
-            border: 4px solid transparent;
-            border-bottom-color: var(--accent);
-            border-left-color: var(--primary);
-            animation-direction: reverse;
+        .state-icon.empty {
+            background: var(--bg);
+            color: var(--text-muted);
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .loading p {
-            font-size: 1.1rem;
-            font-weight: 500;
-            animation: pulse-text 1.5s infinite;
-        }
-
-        @keyframes pulse-text {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        /* Error State */
-        .error {
-            text-align: center;
-            padding: 4rem;
-            color: #ef4444;
-            animation: shake 0.5s ease-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .error-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2.5rem;
-            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .error h3 {
-            color: white;
-            font-size: 1.5rem;
+        .state-message h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text);
             margin-bottom: 0.5rem;
         }
 
-        .error p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 1.5rem;
+        .state-message p {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
         }
 
-        /* Table Styling */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 16px;
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
         }
 
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        thead {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        th {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.2));
-            padding: 1.25rem 1.5rem;
-            text-align: left;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+        .toast {
+            background: var(--text);
             color: white;
-            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        th:first-child {
-            border-radius: 16px 0 0 0;
-        }
-
-        th:last-child {
-            border-radius: 0 16px 0 0;
-        }
-
-        td {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 400;
-        }
-
-        tr {
-            transition: all 0.3s;
-            animation: fadeInRow 0.5s ease-out backwards;
-        }
-
-        tr:nth-child(1) { animation-delay: 0.05s; }
-        tr:nth-child(2) { animation-delay: 0.1s; }
-        tr:nth-child(3) { animation-delay: 0.15s; }
-        tr:nth-child(4) { animation-delay: 0.2s; }
-        tr:nth-child(5) { animation-delay: 0.25s; }
-
-        @keyframes fadeInRow {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        tr:hover {
-            background: rgba(99, 102, 241, 0.1);
-            transform: scale(1.01);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .index-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border-radius: 12px;
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-            transition: all 0.3s;
-        }
-
-        tr:hover .index-badge {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
-        }
-
-        .student-name {
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: white;
-        }
-
-        .email-link {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 500;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .email-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent);
-            transition: width 0.3s;
-        }
-
-        .email-link:hover {
-            color: #22d3ee;
-        }
-
-        .email-link:hover::after {
-            width: 100%;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            font-size: 1.1rem;
-        }
-
-        .icon-btn:hover {
-            background: var(--primary);
-            transform: translateY(-3px) rotate(5deg);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        /* No Results */
-        .no-results {
-            text-align: center;
-            padding: 4rem;
-            color: rgba(255, 255, 255, 0.6);
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .no-results-icon {
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 3rem;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Footer Stats */
-        .footer-stats {
-            margin-top: 2rem;
-            padding: 1.5rem 2rem;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            animation: slideUp 0.8s ease-out 0.6s both;
-        }
-
-        .footer-stat {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-top: 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .footer-stat-value {
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 1.1rem;
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        .sync-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.85rem;
-        }
-
-        .sync-dot {
-            width: 8px;
-            height: 8px;
-            background: #22c55e;
-            border-radius: 50%;
-            animation: blink 2s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Hidden utility */
-        .hidden {
-            display: none !important;
+        .toast.success {
+            background: var(--success);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            body { padding: 1rem; }
-            .header-content { flex-direction: column; text-align: center; }
-            .header h1 { font-size: 1.75rem; }
-            .controls { flex-direction: column; }
-            .btn-group { width: 100%; }
-            .btn { flex: 1; justify-content: center; }
-            th, td { padding: 1rem; font-size: 0.9rem; }
-            .index-badge { font-size: 0.8rem; }
+            .top-bar { padding: 1rem; }
+            .main-container { padding: 0 1rem; margin: 1rem auto; }
+            .control-panel { flex-direction: column; align-items: stretch; }
+            .search-wrapper { min-width: 100%; }
+            th, td { padding: 0.875rem; }
+            .avatar { width: 36px; height: 36px; }
         }
 
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="bg-animation">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    <div class="grid-overlay"></div>
-
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-content">
-                <div class="logo-section">
-                    <div class="logo-icon">🎓</div>
-                    <div class="header-text">
-                        <h1>Student Data Portal</h1>
-                        <p>SLIATE - Nawalapitiya (IT Students)</p>
-                    </div>
+    <!-- Header -->
+    <header class="top-bar">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-icon">🎓</div>
+                <div>
+                    <h1>Student Directory</h1>
+                    <span>SLIATE Nawalapitiya (IT Students)</span>
                 </div>
-                <div class="stats-badge">
-                    <span>Total Students</span>
-                    <span class="stats-number" id="totalCount">0</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportData()">📥 Export</button>
+                <button class="btn btn-primary" onclick="loadData()">🔄 Refresh</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">👥</div>
+                <div class="stat-info">
+                    <h3 id="totalStudents">0</h3>
+                    <p>Total Students</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">🔍</div>
+                <div class="stat-info">
+                    <h3 id="filteredCount">0</h3>
+                    <p>Showing</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">✓</div>
+                <div class="stat-info">
+                    <h3 id="lastUpdated">--:--</h3>
+                    <p>Last Updated</p>
                 </div>
             </div>
         </div>
 
         <!-- Controls -->
-        <div class="controls">
-            <div class="search-box">
+        <div class="control-panel">
+            <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
                 <input 
                     type="text" 
                     id="searchInput" 
-                    placeholder="Search by name, index number, or email..."
+                    placeholder="Search students by name, index, or email..."
                 >
             </div>
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="clearSearch()">✕ Clear</button>
-                <button class="btn btn-primary" onclick="loadData()">🔄 Refresh</button>
-            </div>
+            <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
         </div>
 
-        <!-- Content -->
-        <div class="content">
-            <!-- Loading -->
-            <div id="loading" class="loading">
-                <div class="loading-spinner"></div>
-                <p>Loading student data...</p>
+        <!-- Data Card -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">Student Records</h2>
+                <span class="badge" id="recordBadge">0 records</span>
             </div>
 
-            <!-- Error -->
-            <div id="error" class="error hidden">
-                <div class="error-icon">⚠️</div>
-                <h3>Oops! Something went wrong</h3>
-                <p id="errorMessage">Failed to load data from server</p>
-                <button class="btn btn-primary" onclick="loadData()">Try Again</button>
+            <div id="loadingState" class="state-message">
+                <div class="state-icon loading">⟳</div>
+                <h3>Loading data...</h3>
+                <p>Fetching student information from Google Sheets</p>
             </div>
 
-            <!-- Table -->
-            <div id="tableContainer" class="table-container hidden">
+            <div id="errorState" class="state-message hidden">
+                <div class="state-icon error">⚠️</div>
+                <h3>Failed to load data</h3>
+                <p id="errorText">Please check your connection and try again</p>
+                <button class="btn btn-primary" onclick="loadData()" style="margin-top: 1rem;">Retry</button>
+            </div>
+
+            <div id="emptyState" class="state-message hidden">
+                <div class="state-icon empty">🔍</div>
+                <h3>No students found</h3>
+                <p>Try adjusting your search criteria</p>
+            </div>
+
+            <div id="tableState" class="table-wrapper hidden">
                 <table>
                     <thead>
                         <tr>
-                            <th>📋 Index Number</th>
-                            <th>👤 Student Name</th>
-                            <th>📧 Email Address</th>
-                            <th>⚡ Actions</th>
+                            <th>Index Number</th>
+                            <th>Student Information</th>
+                            <th>Email Address</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
-                <div id="noResults" class="no-results hidden">
-                    <div class="no-results-icon">🔍</div>
-                    <h3>No students found</h3>
-                    <p>Try adjusting your search terms</p>
-                </div>
             </div>
         </div>
+    </main>
 
-        <!-- Footer Stats -->
-        <div class="footer-stats">
-            <div class="footer-stat">
-                <span>Showing:</span>
-                <span class="footer-stat-value" id="showingCount">0</span>
-                <span>of</span>
-                <span class="footer-stat-value" id="totalShowingCount">0</span>
-            </div>
-            <div class="sync-status">
-                <span class="sync-dot"></span>
-                <span id="lastSync">Last synced: Never</span>
-            </div>
-        </div>
-    </div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // Your Apps Script URL
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQNBZxOpwxKM3TvajTNyI4xt8h1fPp5cP8pMdXFHumoTd6Y5SvEOXZzk10VulseB3V/exec';
         
         let allStudents = [];
@@ -800,7 +561,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             if (APPS_SCRIPT_URL.includes('YOUR_DEPLOYMENT_ID')) {
-                showError('Please update APPS_SCRIPT_URL with your deployment URL');
+                showError('Please configure your Apps Script URL');
                 return;
             }
             loadData();
@@ -813,67 +574,61 @@
             try {
                 const response = await fetch(APPS_SCRIPT_URL + '?action=getData');
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const result = await response.json();
                 
-                if (!result.success) {
-                    throw new Error(result.error || 'Unknown error from server');
-                }
+                if (!result.success) throw new Error(result.error);
                 
                 allStudents = result.data || [];
                 filteredStudents = [...allStudents];
                 
                 renderTable();
                 updateStats();
-                updateTimestamp();
                 showTable();
                 
             } catch (error) {
-                console.error('Error:', error);
                 showError(error.message);
             }
         }
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
-            const noResults = document.getElementById('noResults');
             
             if (filteredStudents.length === 0) {
-                tbody.innerHTML = '';
-                noResults.classList.remove('hidden');
+                showEmpty();
                 return;
             }
             
-            noResults.classList.add('hidden');
+            tbody.innerHTML = filteredStudents.map(student => {
+                const initials = (student.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                
+                return `
+                    <tr>
+                        <td>
+                            <span class="index-tag">${escapeHtml(student.index_number || student.index || 'N/A')}</span>
+                        </td>
+                        <td>
+                            <div class="student-info">
+                                <div class="avatar">${initials}</div>
+                                <div class="student-details">
+                                    <h4>${escapeHtml(student.name || 'Unknown')}</h4>
+                                    <p>Student</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="email-cell">${escapeHtml(student.email || 'No email')}</td>
+                        <td>
+                            <div class="actions">
+                                <button class="action-btn" onclick="copyEmail('${escapeHtml(student.email || '')}')" title="Copy">📋</button>
+                                <button class="action-btn" onclick="sendEmail('${escapeHtml(student.email || '')}')" title="Email">✉️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
             
-            tbody.innerHTML = filteredStudents.map((student, index) => `
-                <tr style="animation-delay: ${index * 0.05}s">
-                    <td>
-                        <span class="index-badge">${escapeHtml(student.index_number || student.index || 'N/A')}</span>
-                    </td>
-                    <td>
-                        <div class="student-name">${escapeHtml(student.name || 'Unknown')}</div>
-                    </td>
-                    <td>
-                        <a href="mailto:${escapeHtml(student.email || '')}" class="email-link">
-                            ${escapeHtml(student.email || 'No email')}
-                        </a>
-                    </td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="icon-btn" onclick="copyToClipboard('${escapeHtml(student.email || '')}')" title="Copy Email">
-                                📋
-                            </button>
-                            <button class="icon-btn" onclick="window.open('mailto:${escapeHtml(student.email || '')}')" title="Send Email">
-                                ✉️
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            showTable();
         }
 
         function setupSearch() {
@@ -886,8 +641,8 @@
                     filteredStudents = [...allStudents];
                 } else {
                     filteredStudents = allStudents.filter(student => {
-                        const searchText = `${student.index_number || ''} ${student.index || ''} ${student.name || ''} ${student.email || ''}`.toLowerCase();
-                        return searchText.includes(query);
+                        const text = `${student.index_number || ''} ${student.index || ''} ${student.name || ''} ${student.email || ''}`.toLowerCase();
+                        return text.includes(query);
                     });
                 }
                 
@@ -896,7 +651,7 @@
             });
         }
 
-        function clearSearch() {
+        function clearFilters() {
             document.getElementById('searchInput').value = '';
             filteredStudents = [...allStudents];
             renderTable();
@@ -904,77 +659,94 @@
         }
 
         function updateStats() {
-            const showing = filteredStudents.length;
             const total = allStudents.length;
+            const showing = filteredStudents.length;
             
-            document.getElementById('totalCount').textContent = total;
-            document.getElementById('showingCount').textContent = showing;
-            document.getElementById('totalShowingCount').textContent = total;
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('filteredCount').textContent = showing;
+            document.getElementById('recordBadge').textContent = `${showing} records`;
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
 
-        function updateTimestamp() {
-            const now = new Date();
-            document.getElementById('lastSync').textContent = `Last synced: ${now.toLocaleTimeString()}`;
+        function copyEmail(email) {
+            if (!email) return;
+            navigator.clipboard.writeText(email).then(() => {
+                showToast('Email copied to clipboard', 'success');
+            });
         }
 
-        async function copyToClipboard(text) {
-            if (!text) return;
-            
-            try {
-                await navigator.clipboard.writeText(text);
-                showToast(`Copied: ${text}`);
-            } catch (err) {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showToast(`Copied: ${text}`);
+        function sendEmail(email) {
+            if (!email) return;
+            window.open(`mailto:${email}`);
+        }
+
+        function exportData() {
+            if (allStudents.length === 0) {
+                showToast('No data to export');
+                return;
             }
+            
+            const csv = [
+                ['Index Number', 'Name', 'Email'],
+                ...filteredStudents.map(s => [
+                    s.index_number || s.index || '',
+                    s.name || '',
+                    s.email || ''
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `students_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showToast('Data exported successfully', 'success');
         }
 
-        function showToast(message) {
+        function showToast(message, type = '') {
+            const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 2rem;
-                right: 2rem;
-                background: linear-gradient(135deg, #10b981, #059669);
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 16px;
-                font-weight: 600;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                z-index: 1000;
-                animation: slideInRight 0.3s ease-out;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
+            toast.className = `toast ${type}`;
+            toast.innerHTML = type === 'success' ? '✓ ' + message : message;
+            container.appendChild(toast);
             
             setTimeout(() => {
-                toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
         function showLoading() {
-            document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('error').classList.add('hidden');
-            document.getElementById('tableContainer').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('tableState').classList.add('hidden');
         }
 
         function showTable() {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('error').classList.add('hidden');
-            document.getElementById('tableContainer').classList.remove('hidden');
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('tableState').classList.remove('hidden');
+        }
+
+        function showEmpty() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('tableState').classList.add('hidden');
         }
 
         function showError(message) {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('error').classList.remove('hidden');
-            document.getElementById('tableContainer').classList.add('hidden');
-            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('tableState').classList.add('hidden');
+            document.getElementById('errorText').textContent = message;
         }
 
         function escapeHtml(text) {
@@ -983,16 +755,6 @@
             div.textContent = text;
             return div.innerHTML;
         }
-
-        // Add animation keyframes for toast
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
