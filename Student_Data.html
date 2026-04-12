@@ -131,6 +131,7 @@
         .stat-icon.blue { background: #e0f2fe; }
         .stat-icon.purple { background: #ede9fe; }
         .stat-icon.green { background: #d1fae5; }
+        .stat-icon.red { background: #fee2e2; }
 
         .stat-info h3 {
             font-size: 1.75rem;
@@ -221,6 +222,15 @@
             background: var(--border);
         }
 
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
         /* Content Card */
         .content-card {
             background: var(--card);
@@ -281,6 +291,17 @@
 
         tr:hover {
             background: #fafafa;
+        }
+
+        tr.deleting {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
         }
 
         tr:last-child td {
@@ -351,11 +372,89 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            font-size: 0.875rem;
         }
 
         .action-btn:hover {
             background: var(--bg);
             color: var(--primary);
+        }
+
+        .action-btn.delete:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        .modal h3 {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal p {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            justify-content: center;
         }
 
         /* States */
@@ -428,13 +527,17 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
-        }
-
-        .toast.success {
-            background: var(--success);
         }
 
         /* Responsive */
@@ -445,6 +548,7 @@
             .search-wrapper { min-width: 100%; }
             th, td { padding: 0.875rem; }
             .avatar { width: 36px; height: 36px; }
+            .modal { padding: 1.5rem; }
         }
 
         .hidden { display: none !important; }
@@ -458,7 +562,7 @@
                 <div class="brand-icon">🎓</div>
                 <div>
                     <h1>Student Directory</h1>
-                    <span>SLIATE Nawalapitiya (IT Students)</span>
+                    <span>SLIATE - Nawalapitiya (IT Students)</span>
                 </div>
             </div>
             <div class="header-actions">
@@ -487,10 +591,10 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon green">✓</div>
+                <div class="stat-icon red">🗑️</div>
                 <div class="stat-info">
-                    <h3 id="lastUpdated">--:--</h3>
-                    <p>Last Updated</p>
+                    <h3 id="deletedCount">0</h3>
+                    <p>Deleted This Session</p>
                 </div>
             </div>
         </div>
@@ -550,6 +654,19 @@
         </div>
     </main>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-icon">🗑️</div>
+            <h3>Delete Student Record?</h3>
+            <p>Are you sure you want to delete <strong id="deleteStudentName">this student</strong>? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -558,6 +675,8 @@
         
         let allStudents = [];
         let filteredStudents = [];
+        let studentToDelete = null;
+        let deletedCount = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             if (APPS_SCRIPT_URL.includes('YOUR_DEPLOYMENT_ID')) {
@@ -604,7 +723,7 @@
                 const initials = (student.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 
                 return `
-                    <tr>
+                    <tr data-row-index="${student.sheetRow}" data-student-name="${escapeHtml(student.name || 'Unknown')}">
                         <td>
                             <span class="index-tag">${escapeHtml(student.index_number || student.index || 'N/A')}</span>
                         </td>
@@ -613,15 +732,16 @@
                                 <div class="avatar">${initials}</div>
                                 <div class="student-details">
                                     <h4>${escapeHtml(student.name || 'Unknown')}</h4>
-                                    <p>Student</p>
+                                    <p>Row ${student.sheetRow}</p>
                                 </div>
                             </div>
                         </td>
                         <td class="email-cell">${escapeHtml(student.email || 'No email')}</td>
                         <td>
                             <div class="actions">
-                                <button class="action-btn" onclick="copyEmail('${escapeHtml(student.email || '')}')" title="Copy">📋</button>
-                                <button class="action-btn" onclick="sendEmail('${escapeHtml(student.email || '')}')" title="Email">✉️</button>
+                                <button class="action-btn" onclick="copyEmail('${escapeHtml(student.email || '')}')" title="Copy Email">📋</button>
+                                <button class="action-btn" onclick="sendEmail('${escapeHtml(student.email || '')}')" title="Send Email">✉️</button>
+                                <button class="action-btn delete" onclick="openDeleteModal(${student.sheetRow}, '${escapeHtml(student.name || 'Unknown')}')" title="Delete">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -658,6 +778,71 @@
             updateStats();
         }
 
+        // Delete Functions
+        function openDeleteModal(rowIndex, studentName) {
+            studentToDelete = rowIndex;
+            document.getElementById('deleteStudentName').textContent = studentName;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            studentToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!studentToDelete) return;
+            
+            closeDeleteModal();
+            
+            // Visual feedback - mark row as deleting
+            const row = document.querySelector(`tr[data-row-index="${studentToDelete}"]`);
+            if (row) row.classList.add('deleting');
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'delete',
+                        rowIndex: studentToDelete
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (!result.success) throw new Error(result.error);
+                
+                // Update counters
+                deletedCount++;
+                document.getElementById('deletedCount').textContent = deletedCount;
+                
+                // Remove from arrays
+                allStudents = allStudents.filter(s => s.sheetRow !== studentToDelete);
+                filteredStudents = filteredStudents.filter(s => s.sheetRow !== studentToDelete);
+                
+                // Re-render
+                setTimeout(() => {
+                    renderTable();
+                    updateStats();
+                    showToast('Student deleted successfully', 'success');
+                }, 300);
+                
+            } catch (error) {
+                if (row) row.classList.remove('deleting');
+                showToast('Failed to delete: ' + error.message, 'error');
+            }
+        }
+
+        // Close modal on overlay click
+        document.getElementById('deleteModal').addEventListener('click', (e) => {
+            if (e.target.id === 'deleteModal') closeDeleteModal();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+
         function updateStats() {
             const total = allStudents.length;
             const showing = filteredStudents.length;
@@ -665,7 +850,6 @@
             document.getElementById('totalStudents').textContent = total;
             document.getElementById('filteredCount').textContent = showing;
             document.getElementById('recordBadge').textContent = `${showing} records`;
-            document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
 
         function copyEmail(email) {
@@ -710,7 +894,7 @@
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = type === 'success' ? '✓ ' + message : message;
+            toast.innerHTML = type === 'success' ? '✓ ' + message : type === 'error' ? '✕ ' + message : message;
             container.appendChild(toast);
             
             setTimeout(() => {
